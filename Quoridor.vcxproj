@@ -131,7 +131,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Coord.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Ui.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Coord.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Ui.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
