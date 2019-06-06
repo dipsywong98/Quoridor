@@ -18,5 +18,10 @@ Node::~Node()
 
 bool operator<(const Node& a, const Node& b)
 {
-	return a.sourceDistance + a.targetDistance < b.sourceDistance + b.targetDistance;
+	return (a.sourceDistance + a.targetDistance) < (b.sourceDistance + b.targetDistance);
+}
+
+bool operator>(const Node& a, const Node& b)
+{
+	return (a.sourceDistance + a.targetDistance) > (b.sourceDistance + b.targetDistance);
 }

@@ -11,3 +11,4 @@ struct Node : Coord
 };
 
 bool operator<(const Node& a, const Node& b);
+bool operator>(const Node& a, const Node& b);

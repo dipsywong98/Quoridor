@@ -15,6 +15,22 @@ Ui::~Ui()
 	delete pGame;
 }
 
+void Ui::onClick(const sf::Vector2i& cursorPos)
+{
+	Coord wallCoord;
+	bool isHorizontal;
+	if(screenCoord2WallCoord(cursorPos, wallCoord, isHorizontal))
+	{
+		if(pGame->validateAndPlaceWall(pGame->turn, wallCoord))
+		{
+			std::cout << "placed at" << wallCoord.x << "," << wallCoord.y << std::endl;
+		}else
+		{
+			std::cout << "failed to palce" << std::endl;
+		}
+	}
+}
+
 void Ui::main()
 {
 	while (pWindow->isOpen())
@@ -24,6 +40,12 @@ void Ui::main()
 		{
 			if (event.type == sf::Event::Closed)
 				pWindow->close();
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				cursorPos = sf::Mouse::getPosition(*pWindow);
+				std::cout << "click"<< std::endl;
+				onClick(cursorPos);
+			}
 			if (event.type == sf::Event::MouseMoved)
 			{
 				cursorPos = sf::Mouse::getPosition(*pWindow);
@@ -49,6 +71,8 @@ void Ui::render()
 			pWindow->draw(gridShape);
 		}
 	}
+
+	// handle hover wall display
 	Coord wallCoord;
 	bool isHorizontal;
 	if(screenCoord2WallCoord(cursorPos, wallCoord, isHorizontal))
@@ -63,13 +87,48 @@ void Ui::render()
 		}
 		sf::RectangleShape wallShape(wallShapeSize);
 		wallShape.setFillColor(sf::Color::Red);
-		float wsX = (wallCoord.x / 2)*(GRID_WIDTH + WALL_WIDTH) + !isHorizontal * GRID_WIDTH;
-		float wsY = (wallCoord.y / 2)*(GRID_WIDTH + WALL_WIDTH) + isHorizontal*GRID_WIDTH;
-		std::cout << wsX << " " << wsY << std::endl;
-		wallShape.setPosition(wsX, wsY);
+		wallShape.setPosition(wallCoord2ScreenCoord(wallCoord));
 		pWindow->draw(wallShape);
 	}
+
+	// handle the wall placed before
+	for(int i=0; i<SIZE*2-1; i++)
+	{
+		for(int j=0; j<SIZE*2-1; j++)
+		{
+			if(pGame->walls[i][j])
+			{
+				sf::Vector2<float> wallShapeSize;
+				if(i%2 && j%2) //small square
+				{
+					wallShapeSize = { WALL_WIDTH, WALL_WIDTH };
+				}
+				else if(i%2 && !(j%2)) //vertical
+				{
+					wallShapeSize = { WALL_WIDTH, GRID_WIDTH };
+				}else if(!(i%2) && j%2) //horizontal
+				{
+					wallShapeSize = { GRID_WIDTH, WALL_WIDTH };
+				}else
+				{
+					continue;
+				}
+
+				sf::RectangleShape wallShape(wallShapeSize);
+				wallShape.setFillColor(sf::Color::Red);
+				wallShape.setPosition(wallCoord2ScreenCoord({i,j}));
+				pWindow->draw(wallShape);
+			}
+		}
+	}
 	pWindow->display();
+}
+
+sf::Vector2f Ui::wallCoord2ScreenCoord(const Coord& wallCoord)
+{
+	float wsX = (wallCoord.x / 2)*(GRID_WIDTH + WALL_WIDTH) + (wallCoord.x % 2) * GRID_WIDTH;
+	float wsY = (wallCoord.y / 2)*(GRID_WIDTH + WALL_WIDTH) + (wallCoord.y % 2) * GRID_WIDTH;
+	return { wsX, wsY };
 }
 
 bool Ui::screenCoord2WallCoord(const sf::Vector2i& position, Coord& wallCoord, bool& isHorizontal)

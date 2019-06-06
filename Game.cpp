@@ -2,6 +2,7 @@
 #include <cstring>
 #include <queue>
 #include "Node.h"
+#include <iostream>
 
 const int dx[] = { 0, 1, 0, -1 };
 const int dy[] = { -1, 0, 1, 0 };
@@ -39,6 +40,7 @@ bool Game::validateAndPlaceWall(int playerId, Coord position)
 				walls[x][y] = walls[x][y + 1] = walls[x][y + 2] = true;
 			}
 			--pPlayers[playerId]->wallsLeft;
+			turn = 1 - turn;
 			return true;
 		}
 	}
@@ -60,11 +62,11 @@ bool Game::validateWallPlacement(Coord position, bool& isHorizontal)
 	// places not occupied
 	if(isHorizontal)
 	{
-		if (walls[x][y] || walls[x+ 1][y] || walls[x + 2][y])return false;
+		if (walls[x][y] || walls[x+1][y] || walls[x+2][y])return false;
 		walls[x][y] = walls[x + 1][y] = walls[x + 2][y] = true;
 	}else
 	{
-		if (walls[x][y] || walls[x ][y+1] || walls[x ][y+2])return false;
+		if (walls[x][y] || walls[x][y+1] || walls[x][y+2])return false;
 		walls[x][y] = walls[x][y + 1] = walls[x][y + 2] = true;
 	}
 	bool pathExist = isPathExist(0) >= 0 && isPathExist(1) >= 0;
@@ -84,24 +86,29 @@ int Game::isPathExist(int playerId)
 {
 	const Coord& start = pPlayers[playerId]->position;
 	int targetY = 0;
-	if(playerId == 1)
+	if(playerId == 0)
 	{
 		targetY = SIZE - 1;
 	}
-	std::priority_queue<Node> queue;
+	std::priority_queue<Node, std::vector<Node>, std::greater<Node>> queue;
 	queue.emplace(start, 0, abs(start.y - targetY));
 	bool visited[SIZE][SIZE];
 	memset(visited, 0, SIZE*SIZE);
 	visited[start.x][start.y] = true;
+	std::cout << "route of " << playerId << std::endl;
 	while(!queue.empty())
 	{
-		const Node& node = queue.top();
+		Node node = queue.top();
+		std::cout << node.x << ", " << node.y << std::endl;
 		queue.pop();
 		std::vector<Coord> neighbours = getWalkableNeightborNodes(node);
 		for(auto&& n: neighbours)
 		{
 			if (visited[n.x][n.y])continue;
-			if (abs(n.y - targetY) == 0)return node.sourceDistance + 1;
+			if (abs(n.y - targetY) == 0) {
+				std::cout << "path found "<< node.sourceDistance+1<<std::endl;
+				return node.sourceDistance + 1;
+			}
 			queue.emplace(n, node.sourceDistance + 1, abs(n.y - targetY));
 			visited[n.x][n.y] = true;
 		}
