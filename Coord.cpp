@@ -15,3 +15,8 @@ Coord::Coord(int x, int y):x(x),y(y)
 Coord::~Coord()
 {
 }
+
+bool operator!=(const Coord& a, const Coord& b)
+{
+	return a.x != b.x || a.y != b.y;
+}

@@ -20,6 +20,11 @@ public:
 	 */
 	bool screenCoord2WallCoord(const sf::Vector2i& position, Coord& wallCoord, bool& isHorizontal);
 
+	/**
+	 * return whether is a chess grid
+	 */
+	bool screenCoord2GridCoord(const sf::Vector2i& position, Coord& gridCoord);
+
 
 	const float baseSize = SIZE * GRID_WIDTH + (SIZE - 1)*WALL_WIDTH;
 	sf::RenderWindow* pWindow;

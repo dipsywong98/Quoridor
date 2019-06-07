@@ -7,3 +7,4 @@ struct Coord
 	int x, y;
 };
 
+bool operator!=(const Coord& a,const Coord& b);

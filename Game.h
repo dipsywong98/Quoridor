@@ -64,7 +64,13 @@ public:
 	 */
 	int isPathExist(int playerId);
 	std::vector<Coord> getWalkableNeightborNodes(const Coord& position);
+	bool isWalkable(int x, int y, int direction);
 
+	/**
+	 *
+	 */
+	std::vector<Coord> getPossibleChessMovements(int playerId);
+	bool validateChessMove(int playerId, const Coord& position);
 
 	bool walls[2 * SIZE-1][2 * SIZE - 1]; // walls
 	Player* pPlayers[2];

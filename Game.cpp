@@ -124,9 +124,69 @@ std::vector<Coord> Game::getWalkableNeightborNodes(const Coord& position)
 	std::vector<Coord> nodes;
 	for (int i = 0; i < 4; i++)
 	{
-		if (x + dx[i] < 0 || y + dy[i] < 0 || x + dx[i] >= SIZE || y + dy[i] >= SIZE)continue;
-		if (walls[x * 2 + dx[i]][y * 2 + dy[i]])continue;
-		nodes.emplace_back(x + dx[i], y + dy[i]);
+		if(isWalkable(x,y,i))
+		{
+			nodes.emplace_back(x + dx[i], y + dy[i]);
+		}
 	}
 	return nodes;
+}
+
+bool Game::isWalkable(int x, int y, int i)
+{
+	if (x + dx[i] < 0 || y + dy[i] < 0 || x + dx[i] >= SIZE || y + dy[i] >= SIZE)return false;
+	if (walls[x * 2 + dx[i]][y * 2 + dy[i]])return false;
+	return true;
+}
+
+std::vector<Coord> Game::getPossibleChessMovements(int playerId)
+{
+	const Coord& origin = pPlayers[playerId]->position;
+	int x = origin.x, y = origin.y;
+	const Coord& enemy = pPlayers[1-playerId]->position;
+	std::vector<Coord> neighbours = getWalkableNeightborNodes(origin);
+	std::vector<Coord> ret;
+	for(int i = 0; i < 4; i++)
+	{
+		if(isWalkable(x,y,i))
+		{
+			Coord n = { x + dx[i], y + dy[i] };
+			if (enemy != n)
+			{
+				ret.push_back(n);
+			}
+			else
+			{
+				if(isWalkable(enemy.x, enemy.y, i))
+				{
+					ret.emplace_back(enemy.x + dx[i], enemy.y + dy[i]);
+				}
+				else
+				{
+					int j = (i + 1) % 4;
+					if(isWalkable(enemy.x, enemy.y, j))
+					{
+						ret.emplace_back(enemy.x + dx[j], enemy.y + dy[j]);
+					}
+					j = (i + 3) % 4;
+					if (isWalkable(enemy.x, enemy.y, j))
+					{
+						ret.emplace_back(enemy.x + dx[j], enemy.y + dy[j]);
+					}
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+bool Game::validateChessMove(int playerId, const Coord& gridCoord)
+{
+	const std::vector<Coord> moves = getPossibleChessMovements(playerId);
+	bool isValidMove = false;
+	for (auto&& n : moves)
+	{
+		isValidMove = isValidMove || (n.x == gridCoord.x && n.y == gridCoord.y);
+	}
+	return isValidMove;
 }

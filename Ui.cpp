@@ -121,6 +121,37 @@ void Ui::render()
 			}
 		}
 	}
+
+	Coord gridCoord;
+
+	//handle hover chess display
+	if(screenCoord2GridCoord(cursorPos, gridCoord))
+	{
+		if (pGame->validateChessMove(pGame->turn, gridCoord))
+		{
+			sf::CircleShape chessShape(GRID_WIDTH/2);
+			chessShape.setPosition(gridCoord.x * (GRID_WIDTH + WALL_WIDTH), gridCoord.y * (GRID_WIDTH + WALL_WIDTH));
+			if (pGame->turn)
+			{
+				chessShape.setFillColor(sf::Color::Green);
+			}
+			else
+			{
+				chessShape.setFillColor(sf::Color::Blue);
+			}
+			pWindow->draw(chessShape);			
+		}
+	}
+	sf::CircleShape chessShape0(GRID_WIDTH / 2);
+	chessShape0.setPosition(pGame->pPlayers[0]->position.x * (GRID_WIDTH + WALL_WIDTH), pGame->pPlayers[0]->position.y * (GRID_WIDTH + WALL_WIDTH));
+	sf::CircleShape chessShape1(GRID_WIDTH / 2);
+	chessShape1.setPosition(pGame->pPlayers[1]->position.x * (GRID_WIDTH + WALL_WIDTH), pGame->pPlayers[1]->position.y * (GRID_WIDTH + WALL_WIDTH));
+	chessShape0.setFillColor(sf::Color::Blue);
+	chessShape1.setFillColor(sf::Color::Green);
+	pWindow->draw(chessShape0);
+	pWindow->draw(chessShape1);
+
+
 	pWindow->display();
 }
 
@@ -144,5 +175,18 @@ bool Ui::screenCoord2WallCoord(const sf::Vector2i& position, Coord& wallCoord, b
 	if (!isWallSlot)return false;
 	wallCoord.x = 2*(position.x / (GRID_WIDTH + WALL_WIDTH)) + !isHorizontal;
 	wallCoord.y = 2*(position.y / (GRID_WIDTH + WALL_WIDTH)) + isHorizontal;
+	return true;
+}
+
+bool Ui::screenCoord2GridCoord(const sf::Vector2i& position, Coord& gridCoord)
+{
+	int x = position.x;
+	int y = position.y;
+	if (x > baseSize || y > baseSize)return false;
+	x %= GRID_WIDTH + WALL_WIDTH;
+	y %= GRID_WIDTH + WALL_WIDTH;
+	if (x >= GRID_WIDTH && y >= GRID_WIDTH)return false;
+	gridCoord.x = position.x / (GRID_WIDTH + WALL_WIDTH);
+	gridCoord.y = position.y / (GRID_WIDTH + WALL_WIDTH);
 	return true;
 }
