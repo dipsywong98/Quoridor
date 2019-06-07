@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Game.h"
+#include "Agent.h"
 
 #define GRID_WIDTH 50
 #define WALL_WIDTH 10
@@ -30,5 +31,6 @@ public:
 	sf::RenderWindow* pWindow;
 	sf::Vector2i cursorPos;
 	Game* pGame;
+	Agent* pAgent;
 };
 

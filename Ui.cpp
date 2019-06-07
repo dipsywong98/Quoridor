@@ -7,12 +7,14 @@ Ui::Ui()
 	pGame = new Game();
 	int windowSize = SIZE * (GRID_WIDTH + WALL_WIDTH);
 	pWindow = new sf::RenderWindow(sf::VideoMode(windowSize, windowSize), "Quoridor");
+	pAgent = new Agent();
 }
 
 
 Ui::~Ui()
 {
 	delete pGame;
+	delete pAgent;
 }
 
 void Ui::onClick(const sf::Vector2i& cursorPos)
@@ -60,6 +62,21 @@ void Ui::main()
 			if (event.type == sf::Event::MouseMoved)
 			{
 				cursorPos = sf::Mouse::getPosition(*pWindow);
+			}
+			if(event.type == sf::Event::KeyPressed)
+			{
+				if(event.key.code == sf::Keyboard::Key::A)
+				{
+					Action action;
+					pAgent->decision(pGame, pGame->turn, action, 0, -INFINITY, INFINITY);
+					if(action.type == Action::Type::kWall)
+					{
+						pGame->validateAndPlaceWall(pGame->turn, action.position);
+					}else
+					{
+						pGame->validateAndMoveChess(pGame->turn, action.position);
+					}
+				}
 			}
 		}
 		render();

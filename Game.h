@@ -37,6 +37,8 @@
  * Y
  */
 
+struct Action;
+
 class Game
 {
 public:
@@ -72,6 +74,11 @@ public:
 	std::vector<Coord> getPossibleChessMovements(int playerId);
 	bool validateChessMove(int playerId, const Coord& position);
 	bool validateAndMoveChess(int playerId, const Coord& position);
+
+	bool applyAction(Action& action);
+	bool revertAction(Action& action);
+
+	bool isTerminate();
 
 	bool walls[2 * SIZE-1][2 * SIZE - 1]; // walls
 	Player* pPlayers[2];

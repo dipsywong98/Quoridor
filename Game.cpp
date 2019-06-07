@@ -3,6 +3,7 @@
 #include <queue>
 #include "Node.h"
 #include <iostream>
+#include "Action.h"
 
 const int dx[] = { 0, 1, 0, -1 };
 const int dy[] = { -1, 0, 1, 0 };
@@ -95,18 +96,18 @@ int Game::isPathExist(int playerId)
 	bool visited[SIZE][SIZE];
 	memset(visited, 0, SIZE*SIZE);
 	visited[start.x][start.y] = true;
-	std::cout << "route of " << playerId << std::endl;
+	// std::cout << "route of " << playerId << std::endl;
 	while(!queue.empty())
 	{
 		Node node = queue.top();
-		std::cout << node.x << ", " << node.y << std::endl;
+		// std::cout << node.x << ", " << node.y << std::endl;
 		queue.pop();
 		std::vector<Coord> neighbours = getWalkableNeightborNodes(node);
 		for(auto&& n: neighbours)
 		{
 			if (visited[n.x][n.y])continue;
 			if (abs(n.y - targetY) == 0) {
-				std::cout << "path found "<< node.sourceDistance+1<<std::endl;
+				// std::cout << "path found "<< node.sourceDistance+1<<std::endl;
 				return node.sourceDistance + 1;
 			}
 			queue.emplace(n, node.sourceDistance + 1, abs(n.y - targetY));
@@ -200,4 +201,87 @@ bool Game::validateAndMoveChess(int playerId, const Coord& position)
 		return true;
 	}
 	return false;
+}
+
+bool Game::applyAction(Action& action)
+{
+	const Coord& position = action.position;
+	const Action::Type& type = action.type;
+	bool& isHorizontal = action.isHorizontal;
+	const int& playerId = action.playerId;
+	int x = position.x;
+	int y = position.y;
+	if (type == Action::Type::kWall)
+	{
+		if (validateWallPlacement(position, isHorizontal))
+		{
+			if (isHorizontal)
+			{
+				walls[x][y] = walls[x + 1][y] = walls[x + 2][y] = true;
+			}
+			else
+			{
+				walls[x][y] = walls[x][y + 1] = walls[x][y + 2] = true;
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (validateChessMove(playerId, position))
+		{
+			action.prevPosition = pPlayers[playerId]->position;
+			pPlayers[playerId]->position = position;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool Game::revertAction(Action& action)
+{
+	const Coord& position = action.position;
+	const Action::Type& type = action.type;
+	bool& isHorizontal = action.isHorizontal;
+	const int& playerId = action.playerId;
+	int x = position.x;
+	int y = position.y;
+	if(type == Action::Type::kWall)
+	{
+		if(isHorizontal)
+		{
+			if(walls[x][y] && walls[x+1][y] && walls[x+2][y])
+			{
+				walls[x][y] = walls[x + 1][y] = walls[x + 2][y] = false;
+				return true;
+			}
+		}else
+		{
+			if (walls[x][y] && walls[x][y+1] && walls[x][y+2])
+			{
+				walls[x][y] = walls[x][y+1] = walls[x][y+2] = false;
+				return true;
+			}
+		}
+	}else
+	{
+		if(pPlayers[playerId]->position == position)
+		{
+			pPlayers[playerId]->position = action.prevPosition;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Game::isTerminate()
+{
+	return pPlayers[0]->position.y == SIZE - 1 || pPlayers[1]->position.y == 0;
 }
