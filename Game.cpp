@@ -190,3 +190,14 @@ bool Game::validateChessMove(int playerId, const Coord& gridCoord)
 	}
 	return isValidMove;
 }
+
+bool Game::validateAndMoveChess(int playerId, const Coord& position)
+{
+	if(validateChessMove(playerId, position))
+	{
+		pPlayers[playerId]->position = position;
+		turn = 1 - turn;
+		return true;
+	}
+	return false;
+}

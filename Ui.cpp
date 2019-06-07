@@ -26,7 +26,18 @@ void Ui::onClick(const sf::Vector2i& cursorPos)
 			std::cout << "placed at" << wallCoord.x << "," << wallCoord.y << std::endl;
 		}else
 		{
-			std::cout << "failed to palce" << std::endl;
+			std::cout << "failed to place" << std::endl;
+		}
+	}
+	Coord gridCoord;
+	if(screenCoord2GridCoord(cursorPos, gridCoord))
+	{
+		if(pGame->validateAndMoveChess(pGame->turn, gridCoord))
+		{
+			std::cout << "move to" << gridCoord.x << ", " << gridCoord.y << std::endl;
+		}else
+		{
+			std::cout << "failed to move" << std::endl;
 		}
 	}
 }
