@@ -50,27 +50,52 @@ bool Game::validateAndPlaceWall(int playerId, Coord position)
 
 bool Game::validateWallPlacement(Coord position, bool& isHorizontal)
 {
-	const int x = position.x;
-	const int y = position.y;
+	if(isWallNoOverlap(position, isHorizontal))
+	{
+		return isWallHavePath(position, isHorizontal);
+	}else
+	{
+		return false;
+	}
+}
+
+bool Game::isWallNoOverlap(Coord position, bool& isHorizontal)
+{
+	const int& x = position.x;
+	const int& y = position.y;
 	// one and only one of the x, y is odd
-	if (x%2 + y%2 != 1) return false;
+	if (x % 2 + y % 2 != 1) return false;
 
 	isHorizontal = y % 2;
 
 	//within placeable range
-	if (x > (SIZE - 2)*2 + !isHorizontal || y > (SIZE - 2)*2 + isHorizontal || x < 0 || y < 0)return false;
+	if (x > (SIZE - 2) * 2 + !isHorizontal || y > (SIZE - 2) * 2 + isHorizontal || x < 0 || y < 0)return false;
 
 	// places not occupied
-	if(isHorizontal)
+	if (isHorizontal)
 	{
-		if (walls[x][y] || walls[x+1][y] || walls[x+2][y])return false;
+		if (walls[x][y] || walls[x + 1][y] || walls[x + 2][y])return false;
+	}
+	else
+	{
+		if (walls[x][y] || walls[x][y + 1] || walls[x][y + 2])return false;
+	}
+	return true;
+}
+
+bool Game::isWallHavePath(Coord position, bool& isHorizontal)
+{
+	const int& x = position.x;
+	const int& y = position.y;
+	if (isHorizontal)
+	{
 		walls[x][y] = walls[x + 1][y] = walls[x + 2][y] = true;
-	}else
+	}
+	else
 	{
-		if (walls[x][y] || walls[x][y+1] || walls[x][y+2])return false;
 		walls[x][y] = walls[x][y + 1] = walls[x][y + 2] = true;
 	}
-	bool pathExist = isPathExist(0) >= 0 && isPathExist(1) >= 0;
+	bool pathExist = pathLength(0) >= 0 && pathLength(1) >= 0;
 
 	if (isHorizontal)
 	{
@@ -83,7 +108,7 @@ bool Game::validateWallPlacement(Coord position, bool& isHorizontal)
 	return pathExist;
 }
 
-int Game::isPathExist(int playerId)
+int Game::pathLength(int playerId)
 {
 	const Coord& start = pPlayers[playerId]->position;
 	int targetY = 0;

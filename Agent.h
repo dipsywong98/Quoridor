@@ -1,5 +1,5 @@
 #pragma once
-#define MAX_DEPTH 3
+#define MAX_DEPTH 2
 #include <vector>
 #include "Action.h"
 class Game;

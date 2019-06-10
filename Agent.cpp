@@ -28,29 +28,18 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 
 	if(pGame->pPlayers[playerId]->wallsLeft>0)
 	{
-		// for(int i=0; i<SIZE*2-1; i++)
-		// {
-		// 	for(int j=0; j<SIZE*2-1;j++)
-		// 	{
-		// 		bool isHorizontal;
-		// 		if(pGame->validateWallPlacement({i,j},isHorizontal))
-		// 		{
-		// 			actions.push_back({ playerId, Action::Type::kWall,{i,j},isHorizontal,{0,0} });
-		// 		}
-		// 	}
-		// }
 		for(int i=1; i < (SIZE - 1) * 2; i+=2)
 		{
 			for(int j=0; j<(SIZE-1)*2;j+=2)
 			{
-				bool isHorizontal;
+				bool isHorizontal, isHorizontal2;
 				if(pGame->validateWallPlacement({i,j},isHorizontal))
 				{
 					actions.push_back({ playerId, Action::Type::kWall,{i,j},isHorizontal,{0,0} });
 				}
-				if(pGame->validateWallPlacement({j,i},isHorizontal))
+				if(pGame->validateWallPlacement({j,i},isHorizontal2))
 				{
-					actions.push_back({ playerId, Action::Type::kWall,{j,i},isHorizontal,{0,0} });
+					actions.push_back({ playerId, Action::Type::kWall,{j,i},isHorizontal2,{0,0} });
 				}
 			}
 		}
@@ -91,5 +80,5 @@ float Agent::evaluate(Game* pGame, int playerId)
 		return -INFINITY;
 	}
 
-	return float(pGame->isPathExist(playerId))/float(SIZE*SIZE) - 0.5*float(pGame->isPathExist(playerId))/float(SIZE*SIZE);
+	return float(SIZE*SIZE - pGame->pathLength(playerId))/float(SIZE*SIZE) - 0.5*float(SIZE*SIZE - pGame->pathLength(playerId))/float(SIZE*SIZE);
 }

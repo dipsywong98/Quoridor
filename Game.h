@@ -59,12 +59,14 @@ public:
 	 * and check is path defined
 	 */
 	bool validateWallPlacement(Coord position, bool& isHorizontal);
+	bool isWallNoOverlap(Coord position, bool& isHorizontal);
+	bool isWallHavePath(Coord position, bool& isHorizontal);
 
 	/**
 	 * for A* path finding, return the length of path
 	 * -1 for no path
 	 */
-	int isPathExist(int playerId);
+	int pathLength(int playerId);
 	std::vector<Coord> getWalkableNeightborNodes(const Coord& position);
 	bool isWalkable(int x, int y, int direction);
 

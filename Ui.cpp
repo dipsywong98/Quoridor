@@ -213,7 +213,7 @@ bool Ui::screenCoord2GridCoord(const sf::Vector2i& position, Coord& gridCoord)
 	if (x > baseSize || y > baseSize)return false;
 	x %= GRID_WIDTH + WALL_WIDTH;
 	y %= GRID_WIDTH + WALL_WIDTH;
-	if (x >= GRID_WIDTH && y >= GRID_WIDTH)return false;
+	if (x >= GRID_WIDTH || y >= GRID_WIDTH)return false;
 	gridCoord.x = position.x / (GRID_WIDTH + WALL_WIDTH);
 	gridCoord.y = position.y / (GRID_WIDTH + WALL_WIDTH);
 	return true;
