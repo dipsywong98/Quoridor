@@ -4,6 +4,7 @@
 
 Ui::Ui()
 {
+	std::cout << "player 0: blue (go bottom), player 1: green(go top)" << std::endl;
 	pGame = new Game();
 	int windowSize = SIZE * (GRID_WIDTH + WALL_WIDTH);
 	pWindow = new sf::RenderWindow(sf::VideoMode(windowSize, windowSize), "Quoridor");
@@ -25,7 +26,7 @@ void Ui::onClick(const sf::Vector2i& cursorPos)
 	{
 		if(pGame->validateAndPlaceWall(pGame->turn, wallCoord))
 		{
-			std::cout << "placed at" << wallCoord.x << "," << wallCoord.y << std::endl;
+			// std::cout << "placed at" << wallCoord.x << "," << wallCoord.y << std::endl;
 		}else
 		{
 			std::cout << "failed to place" << std::endl;
@@ -36,7 +37,7 @@ void Ui::onClick(const sf::Vector2i& cursorPos)
 	{
 		if(pGame->validateAndMoveChess(pGame->turn, gridCoord))
 		{
-			std::cout << "move to" << gridCoord.x << ", " << gridCoord.y << std::endl;
+			// std::cout << "move to" << gridCoord.x << ", " << gridCoord.y << std::endl;
 		}else
 		{
 			std::cout << "failed to move" << std::endl;
@@ -46,6 +47,7 @@ void Ui::onClick(const sf::Vector2i& cursorPos)
 
 void Ui::main()
 {
+	restart = false;
 	while (pWindow->isOpen())
 	{
 		sf::Event event;
@@ -56,31 +58,38 @@ void Ui::main()
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
 				cursorPos = sf::Mouse::getPosition(*pWindow);
-				std::cout << "click"<< std::endl;
+				std::cout << "click" << std::endl;
 				onClick(cursorPos);
 			}
 			if (event.type == sf::Event::MouseMoved)
 			{
 				cursorPos = sf::Mouse::getPosition(*pWindow);
 			}
-			if(event.type == sf::Event::KeyPressed)
+			if (event.type == sf::Event::KeyPressed)
 			{
-				if(event.key.code == sf::Keyboard::Key::A)
+				if (event.key.code == sf::Keyboard::Key::A)
 				{
 					Action action;
-					pAgent->decision(pGame, pGame->turn, action, 0, -INFINITY, INFINITY);
-					if(action.type == Action::Type::kWall)
+					float score = pAgent->decision(pGame, pGame->turn, action, 0, -INFINITY, INFINITY);
+					if (action.type == Action::Type::kWall)
 					{
 						pGame->validateAndPlaceWall(pGame->turn, action.position);
-					}else
+					}
+					else
 					{
 						pGame->validateAndMoveChess(pGame->turn, action.position);
 					}
+					std::cout << "score " << score << std::endl;
+				}else if(event.key.code == sf::Keyboard::Key::R)
+				{
+					restart = true;
+					pWindow->close();
 				}
 			}
 		}
 		render();
 	}
+	
 }
 
 void Ui::render()

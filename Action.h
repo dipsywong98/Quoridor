@@ -1,5 +1,6 @@
 #pragma once
 #include "Coord.h"
+#include <ostream>
 
 
 struct Action
@@ -16,3 +17,4 @@ struct Action
 	Coord prevPosition;
 };
 
+std::ostream& operator<<(std::ostream& os, const Action& action);

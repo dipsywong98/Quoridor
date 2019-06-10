@@ -32,5 +32,6 @@ public:
 	sf::Vector2i cursorPos;
 	Game* pGame;
 	Agent* pAgent;
+	bool restart = false;;
 };
 

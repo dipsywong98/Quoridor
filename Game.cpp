@@ -40,6 +40,7 @@ bool Game::validateAndPlaceWall(int playerId, Coord position)
 			{
 				walls[x][y] = walls[x][y + 1] = walls[x][y + 2] = true;
 			}
+			std::cout << "player "<<playerId<<" placed at " << x << ", " << y << std::endl;
 			--pPlayers[playerId]->wallsLeft;
 			turn = 1 - turn;
 			return true;
@@ -223,6 +224,7 @@ bool Game::validateAndMoveChess(int playerId, const Coord& position)
 	{
 		pPlayers[playerId]->position = position;
 		turn = 1 - turn;
+		std::cout << "player " << playerId << " move to " << position.x << ", " << position.y << std::endl;
 		return true;
 	}
 	return false;
@@ -238,7 +240,7 @@ bool Game::applyAction(Action& action)
 	int y = position.y;
 	if (type == Action::Type::kWall)
 	{
-		if (validateWallPlacement(position, isHorizontal))
+		if (isWallNoOverlap(position, isHorizontal))
 		{
 			if (isHorizontal)
 			{

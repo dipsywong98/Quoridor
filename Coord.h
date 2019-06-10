@@ -1,4 +1,6 @@
 #pragma once
+#include <ostream>
+
 struct Coord
 {
 	Coord();
@@ -9,3 +11,4 @@ struct Coord
 
 bool operator!=(const Coord& a,const Coord& b);
 bool operator==(const Coord& a,const Coord& b);
+std::ostream& operator<<(std::ostream& os, const Coord& coord);
