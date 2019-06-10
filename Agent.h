@@ -17,6 +17,6 @@ public:
 	/**
 	 * evaluate the game state on behave of the player
 	 */
-	float evaluate(Game* pGame, int playerId);
+	float evaluate(Game* pGame, int p);
 };
 
