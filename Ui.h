@@ -12,6 +12,7 @@ public:
 	Ui();
 	~Ui();
 	void onClick(const sf::Vector2i& cursorPos);
+	void onKeyBoard(const sf::Event& event);
 	void main();
 	void render();
 	sf::Vector2f wallCoord2ScreenCoord(const Coord& wallCoord);

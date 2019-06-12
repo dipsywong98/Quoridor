@@ -1,6 +1,7 @@
 #include "Ui.h"
 #include <iostream>
 
+extern bool debug;
 
 Ui::Ui()
 {
@@ -45,6 +46,39 @@ void Ui::onClick(const sf::Vector2i& cursorPos)
 	}
 }
 
+void Ui::onKeyBoard(const sf::Event& event)
+{
+	if (event.key.code == sf::Keyboard::Key::A)
+	{
+		std::cout << "thinking" << std::endl;
+		Action action;
+		float score = pAgent->decision(pGame, pGame->turn, action, 0, -INFINITY, INFINITY);
+		if (action.type == Action::Type::kWall)
+		{
+			pGame->validateAndPlaceWall(pGame->turn, action.position);
+		}
+		else
+		{
+			pGame->validateAndMoveChess(pGame->turn, action.position);
+		}
+		std::cout << "score " << score << std::endl;
+	}
+	else if (event.key.code == sf::Keyboard::Key::R)
+	{
+		restart = true;
+		pWindow->close();
+	}
+	else if (event.key.code == sf::Keyboard::C)
+	{
+		system("CLS");
+	}
+	else if(event.key.code == sf::Keyboard::D)
+	{
+		debug = !debug;
+		std::cout << "set debug to " << debug<<std::endl;
+	}
+}
+
 void Ui::main()
 {
 	restart = false;
@@ -67,24 +101,7 @@ void Ui::main()
 			}
 			if (event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::Key::A)
-				{
-					Action action;
-					float score = pAgent->decision(pGame, pGame->turn, action, 0, -INFINITY, INFINITY);
-					if (action.type == Action::Type::kWall)
-					{
-						pGame->validateAndPlaceWall(pGame->turn, action.position);
-					}
-					else
-					{
-						pGame->validateAndMoveChess(pGame->turn, action.position);
-					}
-					std::cout << "score " << score << std::endl;
-				}else if(event.key.code == sf::Keyboard::Key::R)
-				{
-					restart = true;
-					pWindow->close();
-				}
+				onKeyBoard(event);
 			}
 		}
 		render();

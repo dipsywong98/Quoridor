@@ -151,9 +151,10 @@ std::vector<Coord> Game::getWalkableNeightborNodes(const Coord& position)
 	std::vector<Coord> nodes;
 	for (int i = 0; i < 4; i++)
 	{
-		if(isWalkable(x,y,i))
+		int j = (turn*2+i+2) % 4;
+		if(isWalkable(x,y,j))
 		{
-			nodes.emplace_back(x + dx[i], y + dy[i]);
+			nodes.emplace_back(x + dx[j], y + dy[j]);
 		}
 	}
 	return nodes;

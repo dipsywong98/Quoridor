@@ -2,7 +2,10 @@
 #include "Game.h"
 #include <algorithm>
 #include <iostream>
+#include "Log.h"
 
+extern Log d;
+extern Log js;
 
 Agent::Agent()
 {
@@ -28,6 +31,7 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 			if(m.y == targetYp)
 			{
 				bestAction = { playerId, Action::Type::kMove, m,false,pGame->pPlayers[playerId]->position };
+				std::cout << "end" << std::endl;
 				return 1000;
 			}
 		}
@@ -63,13 +67,17 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 		}
 	}
 
+	// js << "{\n";
 	float score = -INFINITY;
 	for(auto&& action: actions)
 	{
 		Action tmpAction;
 		pGame->applyAction(action);
+		// js << "\"" << action << "\": ";
 		float tmpScore = -decision(pGame, 1 - playerId, tmpAction, depth + 1, -beta, -alpha);
-		// std::cout << "depth " << depth << " value " << tmpScore << " this action " << action << " a "<<alpha<<" b"<<beta<<std::endl;
+		// if (MAX_DEPTH % 2)tmpScore *= -1;
+		// js << tmpScore<<",\n";
+		d << "depth " << depth << " value " << tmpScore << " this action " << action << " a "<<alpha<<" b"<<beta<<"\n";
 		pGame->revertAction(action);
 		if(tmpScore > score && tmpScore != -12345678)
 		{
@@ -79,9 +87,11 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 		alpha = std::max(score, alpha);
 		if (alpha >= beta) {
 			// std::cout << "alpha cut a " << alpha << " b " << beta << std::endl;
+			// js << "}, \n\"score\": "<<alpha<<",\n";
 			return alpha;
 		}
 	}
+	// js << "}, \n\"score\": 0\n";
 	if (score == -INFINITY) return 12345678;
 	return score;
 }
@@ -102,7 +112,7 @@ float Agent::evaluate(Game* pGame, int p)
 
 	if(pGame->pPlayers[q]->position.y == targetYq)
 	{
-		return 1000;
+		return -1000;
 	}
 
 	const auto& posp = pGame->pPlayers[p]->position;
@@ -116,5 +126,5 @@ float Agent::evaluate(Game* pGame, int p)
 	if (plq == -1) return 12345678;
 	constexpr int plmax = SIZE * SIZE;
 
-	return float(plmax - plp)/float(plmax) - 0.5*float(plmax - plq)/float(SIZE*SIZE);
+	return float(plmax - plp)/float(plmax) - float(plmax - plq)/float(SIZE*SIZE);
 }

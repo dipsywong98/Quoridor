@@ -133,7 +133,9 @@
   <ItemGroup>
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="Coord.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="Node.cpp" />
@@ -143,8 +145,10 @@
   <ItemGroup>
     <ClInclude Include="Action.h" />
     <ClInclude Include="Coord.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Agent.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Ui.h" />
