@@ -19,23 +19,24 @@ Agent::~Agent()
 float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, float alpha, float beta)
 {
 	// if(depth == 0)
-	{
-		int targetYp = 0;
-		if (playerId == 0)
-		{
-			targetYp = SIZE - 1;
-		}
-		std::vector<Coord> moves = pGame->getPossibleChessMovements(playerId);
-		for (auto&& m : moves)
-		{
-			if(m.y == targetYp)
-			{
-				bestAction = { playerId, Action::Type::kMove, m,false,pGame->pPlayers[playerId]->position };
-				std::cout << "end" << std::endl;
-				return 1000;
-			}
-		}
-	}
+	// {
+	// 	int targetYp = 0;
+	// 	if (playerId == 0)
+	// 	{
+	// 		targetYp = SIZE - 1;
+	// 	}
+	// 	std::vector<Coord> moves = pGame->getPossibleChessMovements(playerId);
+	// 	for (auto&& m : moves)
+	// 	{
+	// 		if(m.y == targetYp)
+	// 		{
+	// 			bestAction = { playerId, Action::Type::kMove, m,false,pGame->pPlayers[playerId]->position };
+	// 			std::cout << "end" << std::endl;
+	// 			return 1000;
+	// 		}
+	// 	}
+	// }
+	bool isMaximizing = pGame->turn == playerId;
 	if(depth>=MAX_DEPTH || pGame->isTerminate())
 	{
 		return evaluate(pGame, pGame->turn);
@@ -48,6 +49,7 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 		actions.push_back({ playerId, Action::Type::kMove,m,false,pGame->pPlayers[playerId]->position });
 	}
 
+	// int wallStart = actions.size();
 	if(pGame->pPlayers[playerId]->wallsLeft>0)
 	{
 		for(int i=1; i < (SIZE - 1) * 2; i+=2)
@@ -69,30 +71,44 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 
 	// js << "{\n";
 	float score = -INFINITY;
+	if (!isMaximizing) score = INFINITY;
 	for(auto&& action: actions)
 	{
 		Action tmpAction;
 		pGame->applyAction(action);
-		// js << "\"" << action << "\": ";
-		float tmpScore = -decision(pGame, 1 - playerId, tmpAction, depth + 1, -beta, -alpha);
-		// if (MAX_DEPTH % 2)tmpScore *= -1;
-		// js << tmpScore<<",\n";
-		d << "depth " << depth << " value " << tmpScore << " this action " << action << " a "<<alpha<<" b"<<beta<<"\n";
+		float tmpScore = decision(pGame, 1 - playerId, tmpAction, depth + 1, alpha, beta);
+		d << "depth " << depth << " value " << tmpScore << " this action " << action << " a "<<alpha<<" b "<<beta<<"\n";
 		pGame->revertAction(action);
-		if(tmpScore > score && tmpScore != -12345678)
+
+		if(isMaximizing)
 		{
-			bestAction = action;
-			score = tmpScore;
+			if (tmpScore > score && tmpScore != 12345678)
+			{
+				bestAction = action;
+				score = tmpScore;
+			}
+			alpha = std::max(score, alpha);
+		}else
+		{
+			if (tmpScore < score && tmpScore != 12345678)
+			{
+				bestAction = action;
+				score = tmpScore;
+			}
+			beta = std::min(score, beta);
 		}
-		alpha = std::max(score, alpha);
 		if (alpha >= beta) {
-			// std::cout << "alpha cut a " << alpha << " b " << beta << std::endl;
-			// js << "}, \n\"score\": "<<alpha<<",\n";
 			return alpha;
 		}
 	}
-	// js << "}, \n\"score\": 0\n";
-	if (score == -INFINITY) return 12345678;
+
+	if(isMaximizing)
+	{
+		if (score == -INFINITY) return 12345678;
+	}else
+	{
+		if (score == INFINITY) return 12345678;
+	}
 	return score;
 }
 
