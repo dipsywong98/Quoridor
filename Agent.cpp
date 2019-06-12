@@ -1,5 +1,6 @@
 #include "Agent.h"
 #include "Game.h"
+#include <ctime>
 #include <algorithm>
 #include <iostream>
 #include "Log.h"
@@ -9,6 +10,7 @@ extern Log js;
 
 Agent::Agent()
 {
+	std::srand(unsigned(std::time(nullptr)));
 }
 
 
@@ -16,26 +18,41 @@ Agent::~Agent()
 {
 }
 
+float Agent::act(Game* pGame)
+{
+	const int p = pGame->turn;
+	// if previous two actions are redundant, deepen the decision tree 
+	if(prevActs[p][0].playerId == p && prevActs[p][1].playerId == p)
+	{
+		if(prevActs[p][0].type == Action::Type::kMove && prevActs[p][1].type == Action::Type::kMove)
+		{
+			if(prevActs[p][0].prevPosition == prevActs[p][1].position)
+			{
+				MAX_DEPTH = CAREFUL_DEPTH;
+			}
+		}
+	}
+	Action action;
+	float score = decision(pGame, pGame->turn, action, 0, -INFINITY, INFINITY);
+	MAX_DEPTH = NORMAL_DEPTH;
+	prevActs[p][0] = prevActs[p][1];
+	prevActs[p][1] = action;
+
+	// execute action
+	if (action.type == Action::Type::kWall)
+	{
+		pGame->validateAndPlaceWall(pGame->turn, action.position);
+	}
+	else
+	{
+		pGame->validateAndMoveChess(pGame->turn, action.position);
+	}
+
+	return score;
+}
+
 float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, float alpha, float beta)
 {
-	// if(depth == 0)
-	// {
-	// 	int targetYp = 0;
-	// 	if (playerId == 0)
-	// 	{
-	// 		targetYp = SIZE - 1;
-	// 	}
-	// 	std::vector<Coord> moves = pGame->getPossibleChessMovements(playerId);
-	// 	for (auto&& m : moves)
-	// 	{
-	// 		if(m.y == targetYp)
-	// 		{
-	// 			bestAction = { playerId, Action::Type::kMove, m,false,pGame->pPlayers[playerId]->position };
-	// 			std::cout << "end" << std::endl;
-	// 			return 1000;
-	// 		}
-	// 	}
-	// }
 	bool isMaximizing = pGame->turn == playerId;
 	if(depth>=MAX_DEPTH || pGame->isTerminate())
 	{
@@ -49,7 +66,7 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 		actions.push_back({ playerId, Action::Type::kMove,m,false,pGame->pPlayers[playerId]->position });
 	}
 
-	// int wallStart = actions.size();
+	int wallStart = actions.size();
 	if(pGame->pPlayers[playerId]->wallsLeft>0)
 	{
 		for(int i=1; i < (SIZE - 1) * 2; i+=2)
@@ -68,6 +85,7 @@ float Agent::decision(Game* pGame, int playerId, Action& bestAction, int depth, 
 			}
 		}
 	}
+	std::random_shuffle(actions.begin()+wallStart, actions.end());
 
 	// js << "{\n";
 	float score = -INFINITY;

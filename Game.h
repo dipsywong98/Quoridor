@@ -1,6 +1,6 @@
 #pragma once
 #define SIZE 7
-#define WALL_CNT 10
+#define WALL_CNT 8
 #include "Player.h"
 #include <vector>
 

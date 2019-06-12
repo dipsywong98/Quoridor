@@ -51,16 +51,7 @@ void Ui::onKeyBoard(const sf::Event& event)
 	if (event.key.code == sf::Keyboard::Key::A)
 	{
 		std::cout << "thinking" << std::endl;
-		Action action;
-		float score = pAgent->decision(pGame, pGame->turn, action, 0, -INFINITY, INFINITY);
-		if (action.type == Action::Type::kWall)
-		{
-			pGame->validateAndPlaceWall(pGame->turn, action.position);
-		}
-		else
-		{
-			pGame->validateAndMoveChess(pGame->turn, action.position);
-		}
+		float score = pAgent->act(pGame);
 		std::cout << "score " << score << std::endl;
 	}
 	else if (event.key.code == sf::Keyboard::Key::R)

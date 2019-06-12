@@ -10,8 +10,8 @@ Log js;
 
 int main()
 {
-	std::ofstream fout("output.js");
-	d.setF(&fout);
+	// std::ofstream fout("output.js");
+	// d.setF(&fout);
 	bool r = false;
 	do
 	{
